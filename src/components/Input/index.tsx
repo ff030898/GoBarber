@@ -1,7 +1,8 @@
 import { useField } from '@unform/core';
 import React, { InputHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { IconBaseProps } from 'react-icons';
-import { Container } from './styles';
+import { FiAlertCircle } from 'react-icons/fi';
+import { Container, Error } from './styles';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
@@ -19,7 +20,6 @@ const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
     setIsFocus(true)
   }, []);
 
-
   const handleInputBluer = useCallback(() => {
     setIsFocus(false)
     setIsFilled(!!inputRef.current?.value)
@@ -33,7 +33,7 @@ const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
     });
   }, [fieldName, registerField])
   return (
-    <Container isFilled={isFilled} isFocused={isFocus}>
+    <Container isErroded={!!error} isFilled={isFilled} isFocused={isFocus}>
       {Icon && <Icon size={20} />}
       <input
         autoComplete="nope"
@@ -42,6 +42,7 @@ const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
         defaultValue={defaultValue}
         ref={inputRef}
         {...rest} />
+      {error && (<Error title={error}><FiAlertCircle color="#c53030" size="20"/></Error>)}
     </Container>
   )
 
