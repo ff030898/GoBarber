@@ -2,16 +2,20 @@ import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import React, { useCallback, useRef } from 'react';
 import { FiLock, FiLogIn, FiMail } from 'react-icons/fi';
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import * as Yup from 'yup';
 import Logo from '../../assets/logo.svg';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
+import { useToast } from '../../hooks/toast';
 import getVaidationErrors from '../../utils/getValidationErros';
 import { AnimatorContainer, Background, Container, Content } from './styles';
 
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
+
+  const { addToast } = useToast();
+  const history = useHistory();
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   const handleSubmit = useCallback(async (data: object) => {
@@ -26,13 +30,28 @@ const SignIn: React.FC = () => {
         abortEarly: false
       });
 
-      <Link to="/dashboard" />
+      addToast({
+        type: 'success',
+        title: 'Bem vindo',
+        description: 'Login realizado com sucesso!'
+      });
+
+      history.push("/dashboard");
 
     } catch (err) {
-      const erros = getVaidationErrors(err);
-      formRef.current?.setErrors(erros);
+      if(err instanceof Yup.ValidationError){
+        const erros = getVaidationErrors(err);
+        formRef.current?.setErrors(erros);
+      }
+
+      addToast({
+        type: 'error',
+        title: 'Erro na autenticação',
+        description: 'Não foi possível fazer login. Verifique suas credenciais'
+      });
+
     }
-  }, []);
+  }, [SignIn, addToast]);
 
   return (
     <Container>

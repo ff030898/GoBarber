@@ -1,7 +1,7 @@
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import React, { useCallback, useRef } from 'react';
-import { FiArrowLeft, FiLock, FiMail, FiUser } from 'react-icons/fi';
+import { FiArrowLeft, FiLock } from 'react-icons/fi';
 import { Link } from "react-router-dom";
 import * as Yup from 'yup';
 import Logo from '../../assets/logo.svg';
@@ -11,9 +11,7 @@ import { useToast } from '../../hooks/toast';
 import getVaidationErrors from '../../utils/getValidationErros';
 import { AnimatorContainer, Background, Container, Content } from './styles';
 
-
-const SignUp: React.FC = () => {
-
+const ResetPassword: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const { addToast } = useToast();
 
@@ -22,9 +20,11 @@ const SignUp: React.FC = () => {
     try {
       formRef.current?.setErrors({});
       const Schema = Yup.object().shape({
-        name: Yup.string().required('Nome é obrigatório'),
-        email: Yup.string().required('Email é obrigatório').email('Digite um email válido'),
-        password: Yup.string().min(6, 'No mínimo 6 digitos')
+        password: Yup.string().required('Senha obrigatória').min(6, 'No mínimo 6 digitos'),
+        password_confirmation: Yup.string().oneOf(
+          [Yup.ref("password"), null],
+          "Confirmação incorreta",
+        ),
       });
 
       await Schema.validate(data, {
@@ -33,8 +33,8 @@ const SignUp: React.FC = () => {
 
       addToast({
         type: 'success',
-        title: 'Bem vindo',
-        description: 'Cadastro realizado com sucesso!'
+        title: 'Pronto!',
+        description: 'Senha alterada com sucesso!'
       });
 
     } catch (err) {
@@ -45,42 +45,38 @@ const SignUp: React.FC = () => {
 
       addToast({
         type: 'error',
-        title: 'Erro no cadastro',
-        description: 'Não foi possível criar sua conta. Verifique os campos digitados'
+        title: 'Ocorreu um erro',
+        description: 'Verifique se os campos estão preenchidos corretamente'
       });
     }
-  }, [SignUp]);
+  }, []);
 
   return (
     <Container>
-
-      <Background />
-
       <Content>
-      <AnimatorContainer>
-        <img src={Logo} alt="GoBarber" />
-        <Form ref={formRef} onSubmit={handleSubmit}>
-          <h1>Faça seu cadastro</h1>
-          <Input name="name" icon={FiUser} type="text" placeholder="Nome" />
-          <Input name="email" icon={FiMail} type="email" placeholder="Email" />
-          <Input name="password" icon={FiLock} type="password" placeholder="Senha" />
-          <Button type="submit">Cadastrar</Button>
+        <AnimatorContainer>
+          <img src={Logo} alt="GoBarber" />
+          <Form ref={formRef} onSubmit={handleSubmit}>
+            <h1>Resetar Senha</h1>
+            <Input name="password" icon={FiLock} type="password" placeholder="Senha" />
+            <Input name="password_confirmation" icon={FiLock} type="password" placeholder="Confirmar Senha" />
 
-        </Form>
+            <Button type="submit">Alterar Senha</Button>
 
-        <Link to="/">
+          </Form>
+
+          <Link to="/">
           <FiArrowLeft />
          Voltar para logon
          </Link>
-         </AnimatorContainer>
+        </AnimatorContainer>
       </Content>
 
-
+      <Background />
     </Container>
-
-  );
+  )
 };
 
-export default SignUp;
+export default ResetPassword;
 
 
