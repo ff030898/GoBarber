@@ -8,6 +8,14 @@ export default createGlobalStyle`
      outline: 0;
   }
 
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    opacity: 0.8;
+  }
+
   body{
     background: #312E38;
     color: #FFF;
